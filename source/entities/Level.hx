@@ -18,7 +18,6 @@ class Level extends Entity
         type = "walls";
         loadLevel(levelName);
         updateGraphic();
-        mask = walls;
     }
 
     override public function update() {
@@ -37,6 +36,7 @@ class Level extends Entity
                         walls.setTile(tileX, tileY, layer.grid2D[tileY][tileX] == "1");
                     }
                 }
+                mask = walls;
             }
             else if(layer.name == "entities") {
                 // Load entities
