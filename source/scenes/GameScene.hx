@@ -14,10 +14,9 @@ import openfl.Assets;
 
 class GameScene extends Scene
 {
-    private var level:Level;
-
     override public function begin() {
-        level = add(new Level("level"));
+        var level = new Level("level");
+        add(level);
         for(entity in level.entities) {
             add(entity);
         }
