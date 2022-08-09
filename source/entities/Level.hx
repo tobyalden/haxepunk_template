@@ -9,9 +9,9 @@ import openfl.Assets;
 
 class Level extends Entity
 {
+    public var entities(default, null):Array<Entity>;
     private var walls:Grid;
     private var tiles:Tilemap;
-    public var entities(default, null):Array<Entity>;
 
     public function new(levelName:String) {
         super(0, 0);
