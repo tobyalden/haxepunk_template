@@ -1,4 +1,5 @@
 import haxepunk.*;
+import haxepunk.debug.Console;
 import haxepunk.input.*;
 import haxepunk.input.gamepads.*;
 import haxepunk.math.*;
@@ -15,6 +16,9 @@ class Main extends Engine
     }
 
     override public function init() {
+#if debug
+        Console.enable();
+#end
         HXP.screen.scaleMode = new UniformScaleMode(UniformScaleType.Expand);
         HXP.fullscreen = true;
 
