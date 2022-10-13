@@ -26,6 +26,7 @@ class Main extends Engine
         Key.define("down", [Key.S, Key.DOWN]);
         Key.define("left", [Key.A, Key.LEFT]);
         Key.define("right", [Key.D, Key.RIGHT]);
+        Key.define("jump", [Key.Z, Key.SPACE]);
 
         if(Gamepad.gamepad(0) != null) {
             defineGamepadInputs(Gamepad.gamepad(0));
@@ -47,6 +48,7 @@ class Main extends Engine
         gamepad.defineAxis("down", XboxGamepad.LEFT_ANALOGUE_Y, 0.5, 1);
         gamepad.defineAxis("left", XboxGamepad.LEFT_ANALOGUE_X, -0.5, -1);
         gamepad.defineAxis("right", XboxGamepad.LEFT_ANALOGUE_X, 0.5, 1);
+        gamepad.defineButton("jump", [XboxGamepad.A_BUTTON]);
     }
 
     override public function update() {

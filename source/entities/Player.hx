@@ -11,7 +11,14 @@ import scenes.*;
 
 class Player extends Entity
 {
-    public static inline var SPEED = 100;
+    public static inline var MAX_RUN_SPEED = 100;
+    public static inline var MAX_AIR_SPEED = 150;
+    public static inline var RUN_ACCEL = 1300;
+    public static inline var AIR_ACCEL = 800;
+    public static inline var GRAVITY = 800;
+    public static inline var JUMP_POWER = 300;
+    public static inline var JUMP_CANCEL = 50;
+    public static inline var MAX_FALL_SPEED = 400;
 
     private var sprite:Spritemap;
     private var velocity:Vector2;
@@ -27,28 +34,87 @@ class Player extends Entity
     }
 
     override public function update() {
-        var heading = new Vector2();
-        if(Input.check("left")) {
-            heading.x = -1;
-        }
-        else if(Input.check("right")) {
-            heading.x = 1;
-        }
-        else {
-            heading.x = 0;
-        }
-        if(Input.check("up")) {
-            heading.y = -1;
-        }
-        else if(Input.check("down")) {
-            heading.y = 1;
-        }
-        else {
-            heading.y = 0;
-        }
-        velocity = heading;
-        velocity.normalize(SPEED);
-        moveBy(velocity.x * HXP.elapsed, velocity.y * HXP.elapsed, ["walls"]);
+        movement();
         super.update();
+    }
+
+    private function movement() {
+        if(isOnGround()) {
+            if(Input.check("left") && !isOnLeftWall()) {
+                velocity.x -= RUN_ACCEL * HXP.elapsed;
+            }
+            else if(Input.check("right") && !isOnRightWall()) {
+                velocity.x += RUN_ACCEL * HXP.elapsed;
+            }
+            else {
+                velocity.x = MathUtil.approach(
+                    velocity.x, 0, RUN_ACCEL * HXP.elapsed
+                );
+            }
+        }
+        else {
+            if(Input.check("left") && !isOnLeftWall()) {
+                velocity.x -= AIR_ACCEL * HXP.elapsed;
+            }
+            else if(Input.check("right") && !isOnRightWall()) {
+                velocity.x += AIR_ACCEL * HXP.elapsed;
+            }
+            else {
+                velocity.x = MathUtil.approach(
+                    velocity.x, 0, AIR_ACCEL * HXP.elapsed
+                );
+            }
+        }
+
+        var maxSpeed = isOnGround() ? MAX_RUN_SPEED : MAX_AIR_SPEED;
+        velocity.x = MathUtil.clamp(velocity.x, -maxSpeed, maxSpeed);
+
+        if(isOnGround()) {
+            velocity.y = 0;
+            if(Input.pressed("jump")) {
+                velocity.y = -JUMP_POWER;
+            }
+        }
+        else {
+            if(Input.released("jump") && velocity.y < -JUMP_CANCEL) {
+                velocity.y = -JUMP_CANCEL;
+            }
+        }
+
+        var gravity:Float = GRAVITY;
+        if(Math.abs(velocity.y) < JUMP_CANCEL) {
+            gravity *= 0.5;
+        }
+        velocity.y += gravity * HXP.elapsed;
+
+        velocity.y = Math.min(velocity.y, MAX_FALL_SPEED);
+
+        moveBy(
+            velocity.x * HXP.elapsed,
+            velocity.y * HXP.elapsed,
+            ["walls"]
+        );
+    }
+
+    override public function moveCollideX(e:Entity) {
+        velocity.x = 0;
+        return true;
+    }
+
+    override public function moveCollideY(e:Entity) {
+        velocity.y = 0;
+        return true;
+    }
+
+    private function isOnGround() {
+        return collide("walls", x, y + 1) != null;
+    }
+
+    private function isOnLeftWall() {
+        return collide("walls", x - 1, y) != null;
+    }
+
+    private function isOnRightWall() {
+        return collide("walls", x + 1, y) != null;
     }
 }
