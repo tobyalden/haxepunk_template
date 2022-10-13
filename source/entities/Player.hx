@@ -19,9 +19,13 @@ class Player extends Entity
     public static inline var JUMP_POWER = 300;
     public static inline var JUMP_CANCEL = 50;
     public static inline var MAX_FALL_SPEED = 400;
+    public static inline var COYOTE_TIME = 1 / 60 * 5;
+    public static inline var JUMP_BUFFER_TIME = 1 / 60 * 5;
 
     private var sprite:Spritemap;
     private var velocity:Vector2;
+    private var timeOffGround:Float;
+    private var timeJumpHeld:Float;
 
     public function new(x:Float, y:Float) {
         super(x, y);
@@ -31,15 +35,24 @@ class Player extends Entity
         sprite.play("idle");
         graphic = sprite;
         velocity = new Vector2();
+        timeOffGround = 0;
+        timeJumpHeld = 0;
     }
 
     override public function update() {
         movement();
         super.update();
+        if(Input.check("jump")) {
+            timeJumpHeld += HXP.elapsed;
+        }
+        else {
+            timeJumpHeld = 0;
+        }
     }
 
     private function movement() {
         if(isOnGround()) {
+            timeOffGround = 0;
             if(Input.check("left") && !isOnLeftWall()) {
                 velocity.x -= RUN_ACCEL * HXP.elapsed;
             }
@@ -53,6 +66,7 @@ class Player extends Entity
             }
         }
         else {
+            timeOffGround += HXP.elapsed;
             if(Input.check("left") && !isOnLeftWall()) {
                 velocity.x -= AIR_ACCEL * HXP.elapsed;
             }
@@ -71,13 +85,19 @@ class Player extends Entity
 
         if(isOnGround()) {
             velocity.y = 0;
-            if(Input.pressed("jump")) {
-                velocity.y = -JUMP_POWER;
-            }
         }
         else {
             if(Input.released("jump") && velocity.y < -JUMP_CANCEL) {
                 velocity.y = -JUMP_CANCEL;
+            }
+        }
+
+        if(isOnGround() || timeOffGround <= COYOTE_TIME) {
+            if(
+                Input.pressed("jump")
+                || Input.check("jump") && timeJumpHeld <= JUMP_BUFFER_TIME
+            ) {
+                velocity.y = -JUMP_POWER;
             }
         }
 
@@ -118,3 +138,5 @@ class Player extends Entity
         return collide("walls", x + 1, y) != null;
     }
 }
+
+
