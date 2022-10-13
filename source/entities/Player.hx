@@ -18,14 +18,19 @@ class Player extends Entity
     public static inline var GRAVITY = 800;
     public static inline var JUMP_POWER = 300;
     public static inline var JUMP_CANCEL = 50;
+    public static inline var WALL_JUMP_POWER_X = MAX_AIR_SPEED;
+    public static inline var WALL_JUMP_POWER_Y = 275;
     public static inline var MAX_FALL_SPEED = 400;
+    public static inline var MAX_FALL_SPEED_ON_WALL = 50;
     public static inline var COYOTE_TIME = 1 / 60 * 5;
     public static inline var JUMP_BUFFER_TIME = 1 / 60 * 5;
+    public static inline var WALL_STICK_TIME = 0.2;
 
     private var sprite:Spritemap;
     private var velocity:Vector2;
     private var timeOffGround:Float;
     private var timeJumpHeld:Float;
+    private var timeWallStuck:Float;
 
     public function new(x:Float, y:Float) {
         super(x, y);
@@ -37,6 +42,7 @@ class Player extends Entity
         velocity = new Vector2();
         timeOffGround = 0;
         timeJumpHeld = 0;
+        timeWallStuck = 0;
     }
 
     override public function update() {
@@ -67,16 +73,29 @@ class Player extends Entity
         }
         else {
             timeOffGround += HXP.elapsed;
-            if(Input.check("left") && !isOnLeftWall()) {
-                velocity.x -= AIR_ACCEL * HXP.elapsed;
+            if(isOnWall()) {
+                if(
+                    isOnLeftWall() && Input.check("right")
+                    || isOnRightWall() && Input.check("left")
+                ) {
+                    timeWallStuck += HXP.elapsed;
+                }
+                else {
+                    timeWallStuck = 0;
+                }
             }
-            else if(Input.check("right") && !isOnRightWall()) {
-                velocity.x += AIR_ACCEL * HXP.elapsed;
-            }
-            else {
-                velocity.x = MathUtil.approach(
-                    velocity.x, 0, AIR_ACCEL * HXP.elapsed
-                );
+            if(!isOnWall() || timeWallStuck >= WALL_STICK_TIME) {
+                if(Input.check("left") && !isOnLeftWall()) {
+                    velocity.x -= AIR_ACCEL * HXP.elapsed;
+                }
+                else if(Input.check("right") && !isOnRightWall()) {
+                    velocity.x += AIR_ACCEL * HXP.elapsed;
+                }
+                else {
+                    velocity.x = MathUtil.approach(
+                        velocity.x, 0, AIR_ACCEL * HXP.elapsed
+                    );
+                }
             }
         }
 
@@ -100,6 +119,20 @@ class Player extends Entity
                 velocity.y = -JUMP_POWER;
             }
         }
+        else if(isOnWall()) {
+            if(
+                Input.pressed("jump")
+                || Input.check("jump") && timeJumpHeld <= JUMP_BUFFER_TIME
+            ) {
+                velocity.y = -WALL_JUMP_POWER_Y;
+                if(isOnLeftWall()) {
+                    velocity.x = WALL_JUMP_POWER_X;
+                }
+                else {
+                    velocity.x = -WALL_JUMP_POWER_X;
+                }
+            }
+        }
 
         var gravity:Float = GRAVITY;
         if(Math.abs(velocity.y) < JUMP_CANCEL) {
@@ -107,7 +140,10 @@ class Player extends Entity
         }
         velocity.y += gravity * HXP.elapsed;
 
-        velocity.y = Math.min(velocity.y, MAX_FALL_SPEED);
+        velocity.y = Math.min(
+            velocity.y,
+            isOnWall() ? MAX_FALL_SPEED_ON_WALL : MAX_FALL_SPEED
+        );
 
         moveBy(
             velocity.x * HXP.elapsed,
@@ -128,6 +164,10 @@ class Player extends Entity
 
     private function isOnGround() {
         return collide("walls", x, y + 1) != null;
+    }
+
+    private function isOnWall() {
+        return isOnLeftWall() || isOnRightWall();
     }
 
     private function isOnLeftWall() {
