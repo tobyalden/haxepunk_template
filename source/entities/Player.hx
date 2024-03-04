@@ -151,6 +151,14 @@ class Player extends Entity
             velocity.y * HXP.elapsed,
             ["walls"]
         );
+
+        // Torus
+        if(right <= 0) {
+            moveTo(GameScene.GAME_WIDTH - 1, y);
+        }
+        else if(left >= GameScene.GAME_WIDTH) {
+            moveTo(-width + 1, y);
+        }
     }
 
     override public function moveCollideX(e:Entity) {
