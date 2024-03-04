@@ -9,6 +9,8 @@ import openfl.Assets;
 
 class Level extends Entity
 {
+    public static inline var TILE_SIZE = 10;
+
     public var entities(default, null):Array<Entity>;
     private var walls:Grid;
     private var tiles:Tilemap;
@@ -30,7 +32,7 @@ class Level extends Entity
             var layer = levelData.layers[layerIndex];
             if(layer.name == "walls") {
                 // Load solid geometry
-                walls = new Grid(levelData.width, levelData.height, layer.gridCellWidth, layer.gridCellHeight);
+                walls = new Grid(levelData.width, levelData.height, TILE_SIZE, TILE_SIZE);
                 for(tileY in 0...layer.grid2D.length) {
                     for(tileX in 0...layer.grid2D[0].length) {
                         walls.setTile(tileX, tileY, layer.grid2D[tileY][tileX] == "1");
@@ -45,6 +47,17 @@ class Level extends Entity
                     var entity = layer.entities[entityIndex];
                     if(entity.name == "player") {
                         entities.push(new Player(entity.x, entity.y));
+                    }
+                    if(entity.name == "optionalSolid") {
+                        var tileStartX = Std.int(entity.x / TILE_SIZE);
+                        var tileStartY = Std.int(entity.y / TILE_SIZE);
+                        var tileWidth = Std.int(entity.width / TILE_SIZE);
+                        var tileHeight = Std.int(entity.height / TILE_SIZE);
+                        for(tileX in tileStartX...(tileStartX + tileWidth)) {
+                            for(tileY in tileStartY...(tileStartY + tileHeight)) {
+                                walls.setTile(tileX, tileY, true);
+                            }
+                        }
                     }
                 }
             }
