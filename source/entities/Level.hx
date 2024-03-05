@@ -19,6 +19,9 @@ class Level extends Entity
         super(0, 0);
         type = "walls";
         loadLevel(levelName);
+        if(Random.random < 0.5) {
+            flipHorizontally();
+        }
         updateGraphic();
     }
 
@@ -49,17 +52,41 @@ class Level extends Entity
                         entities.push(new Player(entity.x, entity.y));
                     }
                     if(entity.name == "optionalSolid") {
-                        var tileStartX = Std.int(entity.x / TILE_SIZE);
-                        var tileStartY = Std.int(entity.y / TILE_SIZE);
-                        var tileWidth = Std.int(entity.width / TILE_SIZE);
-                        var tileHeight = Std.int(entity.height / TILE_SIZE);
-                        for(tileX in tileStartX...(tileStartX + tileWidth)) {
-                            for(tileY in tileStartY...(tileStartY + tileHeight)) {
-                                walls.setTile(tileX, tileY, true);
+                        if(Random.random < 0.5) {
+                            var tileStartX = Std.int(entity.x / TILE_SIZE);
+                            var tileStartY = Std.int(entity.y / TILE_SIZE);
+                            var tileWidth = Std.int(entity.width / TILE_SIZE);
+                            var tileHeight = Std.int(entity.height / TILE_SIZE);
+                            for(tileX in tileStartX...(tileStartX + tileWidth)) {
+                                for(tileY in tileStartY...(tileStartY + tileHeight)) {
+                                    walls.setTile(tileX, tileY, true);
+                                }
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private function flipHorizontally() {
+        for(tileX in 0...Std.int(walls.columns / 2)) {
+            for(tileY in 0...walls.rows) {
+                var tempLeft:Null<Bool> = walls.getTile(tileX, tileY);
+                // For some reason getTile() returns null instead of false!
+                if(tempLeft == null) {
+                    tempLeft = false;
+                }
+                var tempRight:Null<Bool> = walls.getTile(
+                    walls.columns - tileX - 1, tileY
+                );
+                if(tempRight == null) {
+                    tempRight = false;
+                }
+                walls.setTile(tileX, tileY, tempRight);
+                walls.setTile(
+                    walls.columns - tileX - 1, tileY, tempLeft
+                );
             }
         }
     }
