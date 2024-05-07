@@ -25,4 +25,8 @@ class GameScene extends Scene
     override public function update() {
         super.update();
     }
+
+    public function onDeath() {
+        HXP.scene = new GameScene();
+    }
 }

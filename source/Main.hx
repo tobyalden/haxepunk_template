@@ -20,12 +20,13 @@ class Main extends Engine
         Console.enable();
 #end
         HXP.screen.scaleMode = new UniformScaleMode(UniformScaleType.Expand);
-        HXP.fullscreen = true;
+        HXP.fullscreen = false;
 
         Key.define("up", [Key.W, Key.UP]);
         Key.define("down", [Key.S, Key.DOWN]);
         Key.define("left", [Key.A, Key.LEFT]);
         Key.define("right", [Key.D, Key.RIGHT]);
+        Key.define("jump", [Key.J]);
 
         if(Gamepad.gamepad(0) != null) {
             defineGamepadInputs(Gamepad.gamepad(0));

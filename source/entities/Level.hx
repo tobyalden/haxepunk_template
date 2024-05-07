@@ -26,6 +26,7 @@ class Level extends Entity
 
     private function loadLevel(levelName:String) {
         var levelData = haxe.Json.parse(Assets.getText('levels/${levelName}.json'));
+        entities = new Array<Entity>();
         for(layerIndex in 0...levelData.layers.length) {
             var layer = levelData.layers[layerIndex];
             if(layer.name == "walls") {
@@ -38,13 +39,25 @@ class Level extends Entity
                 }
                 mask = walls;
             }
+            if(layer.name == "pits") {
+                var pitGrid = new Grid(levelData.width, levelData.height, layer.gridCellWidth, layer.gridCellHeight);
+                for(tileY in 0...layer.grid2D.length) {
+                    for(tileX in 0...layer.grid2D[0].length) {
+                        pitGrid.setTile(tileX, tileY, layer.grid2D[tileY][tileX] == "1");
+                    }
+                }
+                entities.push(new Pits(pitGrid));
+                mask = walls;
+            }
             else if(layer.name == "entities") {
                 // Load entities
-                entities = new Array<Entity>();
                 for(entityIndex in 0...layer.entities.length) {
                     var entity = layer.entities[entityIndex];
                     if(entity.name == "player") {
                         entities.push(new Player(entity.x, entity.y));
+                    }
+                    else if(entity.name == "drain") {
+                        entities.push(new Drain(entity.x, entity.y, entity.width, entity.height));
                     }
                 }
             }
@@ -66,4 +79,3 @@ class Level extends Entity
         graphic = tiles;
     }
 }
-
