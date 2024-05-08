@@ -150,7 +150,10 @@
       "gridCellsY": 54,
       "entities": [
         {"name": "player", "id": 0, "_eid": "42404373", "x": 70, "y": 70, "originX": 0, "originY": 0},
-        {"name": "drain", "id": 1, "_eid": "11968149", "x": 250, "y": 250, "width": 40, "height": 40, "originX": 0, "originY": 0}
+        {"name": "drain", "id": 1, "_eid": "11968149", "x": 250, "y": 250, "width": 40, "height": 40, "originX": 0, "originY": 0},
+        {"name": "peg", "id": 2, "_eid": "20373050", "x": 270, "y": 70, "originX": 0, "originY": 0},
+        {"name": "peg", "id": 3, "_eid": "20373050", "x": 270, "y": 130, "originX": 0, "originY": 0},
+        {"name": "peg", "id": 4, "_eid": "20373050", "x": 410, "y": 290, "originX": 0, "originY": 0}
       ]
     }
   ]

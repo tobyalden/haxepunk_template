@@ -59,6 +59,9 @@ class Level extends Entity
                     else if(entity.name == "drain") {
                         entities.push(new Drain(entity.x, entity.y, entity.width, entity.height));
                     }
+                    else if(entity.name == "peg") {
+                        entities.push(new Peg(entity.x, entity.y));
+                    }
                 }
             }
         }

@@ -15,7 +15,7 @@ class Player extends Entity
 {
     public static inline var ACCEL = 400 * 2;
     public static inline var DECEL = 100;
-    public static inline var MAX_SPEED = 200;
+    public static inline var MAX_SPEED = 250;
     public static inline var JUMP_HEIGHT = 50;
     public static inline var JUMP_TIME = 0.25;
 
@@ -80,31 +80,54 @@ class Player extends Entity
             velocity.add(accel);
         }
 
-        var drains = [];
-        HXP.scene.getType("drain", drains);
-        for(drain in drains) {
-            var towardsDrain = new Vector2(
-                drain.centerX - centerX,
-                drain.centerY - centerY
-            );
-            var drainDistance = distanceFrom(drain, true);
-            var distanceMultiplier = MathUtil.clamp(200 / drainDistance, 1, 2);
-            towardsDrain.normalize(
-                Drain.PULL_STRENGTH * distanceMultiplier * HXP.elapsed
-            );
-            velocity.add(towardsDrain);
-        }
+        //var drains = [];
+        //HXP.scene.getType("drain", drains);
+        //for(drain in drains) {
+            //var towardsDrain = new Vector2(
+                //drain.centerX - centerX,
+                //drain.centerY - centerY
+            //);
+            //var drainDistance = distanceFrom(drain, true);
+            //var distanceMultiplier = MathUtil.clamp(200 / drainDistance, 1, 2);
+            //towardsDrain.normalize(
+                //Drain.PULL_STRENGTH * distanceMultiplier * HXP.elapsed
+            //);
+            //velocity.add(towardsDrain);
+        //}
 
         if(velocity.length > MAX_SPEED) {
             velocity.normalize(MAX_SPEED);
         }
 
-        moveBy(velocity.x * HXP.elapsed, velocity.y * HXP.elapsed, ["walls"]);
+        moveBy(velocity.x * HXP.elapsed, velocity.y * HXP.elapsed, ["walls", "peg"]);
 
         if(Input.pressed("jump") && !jump.active) {
             jump.tween(this, "z", JUMP_HEIGHT, JUMP_TIME, Ease.expoInOut);
             HXP.scene.camera.shake(0.1, 2);
         }
+    }
+
+    override public function moveCollideX(e:Entity) {
+        if(e.type == "peg") {
+            bounceOffPeg(e);
+        }
+        return true;
+    }
+
+    override public function moveCollideY(e:Entity) {
+        if(e.type == "peg") {
+            bounceOffPeg(e);
+        }
+        return true;
+    }
+
+    private function bounceOffPeg(peg:Entity) {
+        var awayFromPeg = new Vector2(
+            centerX - peg.centerX,
+            centerY - peg.centerY
+        );
+        awayFromPeg.normalize(Peg.BOUNCE_STRENGTH);
+        velocity.add(awayFromPeg);
     }
 
     private function collisions() {
