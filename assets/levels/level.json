@@ -41,12 +41,60 @@
       "_eid": "42418946",
       "offsetX": 0,
       "offsetY": 0,
-      "gridCellWidth": 10,
-      "gridCellHeight": 10,
-      "gridCellsX": 32,
-      "gridCellsY": 18,
+      "gridCellWidth": 5,
+      "gridCellHeight": 5,
+      "gridCellsX": 64,
+      "gridCellsY": 36,
       "entities": [
-        {"name": "player", "id": 3, "_eid": "42404373", "x": 40, "y": 160, "originX": 0, "originY": 0}
+        {"name": "player", "id": 3, "_eid": "42404373", "x": 40, "y": 160, "originX": 0, "originY": 0},
+        {
+          "name": "spike",
+          "id": 4,
+          "_eid": "46071412",
+          "x": 60,
+          "y": 75,
+          "width": 60,
+          "height": 5,
+          "originX": 0,
+          "originY": 0,
+          "values": {"orientation": "floor"}
+        },
+        {
+          "name": "spike",
+          "id": 5,
+          "_eid": "46071412",
+          "x": 120,
+          "y": 80,
+          "width": 5,
+          "height": 20,
+          "originX": 0,
+          "originY": 0,
+          "values": {"orientation": "leftwall"}
+        },
+        {
+          "name": "spike",
+          "id": 6,
+          "_eid": "46071412",
+          "x": 60,
+          "y": 100,
+          "width": 60,
+          "height": 5,
+          "originX": 0,
+          "originY": 0,
+          "values": {"orientation": "ceiling"}
+        },
+        {
+          "name": "spike",
+          "id": 7,
+          "_eid": "46071412",
+          "x": 55,
+          "y": 80,
+          "width": 5,
+          "height": 20,
+          "originX": 0,
+          "originY": 0,
+          "values": {"orientation": "rightwall"}
+        }
       ]
     }
   ]

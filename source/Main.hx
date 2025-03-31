@@ -20,7 +20,7 @@ class Main extends Engine
         Console.enable();
 #end
         HXP.screen.scaleMode = new UniformScaleMode(UniformScaleType.Expand);
-        HXP.fullscreen = true;
+        HXP.fullscreen = false;
 
         Key.define("up", [Key.W, Key.UP]);
         Key.define("down", [Key.S, Key.DOWN]);

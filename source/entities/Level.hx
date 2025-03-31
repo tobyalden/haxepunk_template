@@ -46,6 +46,13 @@ class Level extends Entity
                     if(entity.name == "player") {
                         entities.push(new Player(entity.x, entity.y));
                     }
+                    if(entity.name == "spike") {
+                        entities.push(new Spike(
+                            entity.x, entity.y,
+                            entity.width, entity.height,
+                            entity.values.orientation
+                        ));
+                    }
                 }
             }
         }
