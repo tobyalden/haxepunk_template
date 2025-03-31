@@ -25,12 +25,15 @@ class Player extends Entity
     public static inline var COYOTE_TIME = 1 / 60 * 5;
     public static inline var JUMP_BUFFER_TIME = 1 / 60 * 5;
     public static inline var WALL_STICK_TIME = 0.2;
+    public static inline var SPAWN_PAUSE = 0.1;
 
+    public var isDead(default, null):Bool;
     private var sprite:Spritemap;
     private var velocity:Vector2;
     private var timeOffGround:Float;
     private var timeJumpHeld:Float;
     private var timeWallStuck:Float;
+    private var canMove:Bool;
 
     public function new(x:Float, y:Float) {
         super(x, y);
@@ -43,10 +46,22 @@ class Player extends Entity
         timeOffGround = 0;
         timeJumpHeld = 0;
         timeWallStuck = 0;
+        isDead = false;
+        canMove = false;
+        HXP.alarm(SPAWN_PAUSE, function() {
+            canMove = true;
+        });
     }
 
     override public function update() {
-        movement();
+        if(isDead) {
+            super.update();
+            return;
+        }
+        if(canMove) {
+            movement();
+        }
+        collisions();
         super.update();
         if(Input.check("jump")) {
             timeJumpHeld += HXP.elapsed;
@@ -150,6 +165,51 @@ class Player extends Entity
             velocity.y * HXP.elapsed,
             ["walls"]
         );
+    }
+
+    private function collisions() {
+        if(collide("hazard", x, y) != null) {
+            die();
+        }
+    }
+
+    public function die() {
+        isDead = true;
+        visible = false;
+        explode();
+        Main.sfx["die"].play();
+        cast(HXP.scene, GameScene).onDeath();
+    }
+
+    private function explode() {
+        var numExplosions = 50;
+        var directions = new Array<Vector2>();
+        for(i in 0...numExplosions) {
+            var angle = (2/numExplosions) * i;
+            directions.push(new Vector2(Math.cos(angle), Math.sin(angle)));
+            directions.push(new Vector2(-Math.cos(angle), Math.sin(angle)));
+            directions.push(new Vector2(Math.cos(angle), -Math.sin(angle)));
+            directions.push(new Vector2(-Math.cos(angle), -Math.sin(angle)));
+        }
+        var count = 0;
+        for(direction in directions) {
+            direction.scale(0.8 * Math.random());
+            direction.normalize(
+                Math.max(0.1 + 0.2 * Math.random(), direction.length)
+            );
+            direction.scale(2);
+            var explosion = new Particle(
+                centerX, centerY, directions[count], 1, 1
+            );
+            explosion.layer = -99;
+            HXP.scene.add(explosion);
+            count++;
+        }
+
+#if desktop
+        Sys.sleep(0.02);
+#end
+        HXP.scene.camera.shake(0.25, 4);
     }
 
     override public function moveCollideX(e:Entity) {

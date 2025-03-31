@@ -11,6 +11,8 @@ import scenes.*;
 
 class Main extends Engine
 {
+    public static var sfx:Map<String, Sfx> = null;
+
     static function main() {
         new Main();
     }
@@ -35,6 +37,10 @@ class Main extends Engine
         Gamepad.onConnect.bind(function(newGamepad:Gamepad) {
             defineGamepadInputs(newGamepad);
         });
+
+        sfx = [
+            "die" => new Sfx("audio/die.ogg")
+        ];
 
         HXP.scene = new GameScene();
     }
