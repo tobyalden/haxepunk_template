@@ -1,0 +1,57 @@
+{
+  "_id": "b15cfe30",
+  "name": "haxepunk_template",
+  "levelDefaultSize": {
+    "x": 320,
+    "y": 180
+  },
+  "backgroundColor": "#686baaff",
+  "gridColor": "#2e2e2e80",
+  "levelPaths": [
+    "."
+  ],
+  "layers": [
+    {
+      "_id": "b15d4098",
+      "definition": "grid",
+      "name": "walls",
+      "gridSize": {
+        "x": 10,
+        "y": 10
+      },
+      "legend": {
+        "0": "#00000000",
+        "1": "#000000ff"
+      }
+    },
+    {
+      "_id": "e0d2b838",
+      "definition": "entity",
+      "name": "entities",
+      "gridSize": {
+        "x": 5,
+        "y": 5
+      },
+      "legend": {}
+    }
+  ],
+  "entities": [
+    {
+      "_id": "03592128",
+      "name": "player",
+      "size": {
+        "x": 10,
+        "y": 10
+      },
+      "color": "#e6d350ff",
+      "resizable": false,
+      "nodes": false,
+      "nodeLimit": 0,
+      "values": [],
+      "tileX": false,
+      "tileY": false
+    }
+  ],
+  "enums": [],
+  "values": []
+}

@@ -33,7 +33,7 @@ class Level extends Entity
                 walls = new Grid(levelData.width, levelData.height, layer.gridCellWidth, layer.gridCellHeight);
                 for(tileY in 0...layer.grid2D.length) {
                     for(tileX in 0...layer.grid2D[0].length) {
-                        walls.setTile(tileX, tileY, layer.grid2D[tileY][tileX] == "1");
+                        walls.setTile(tileX, tileY, layer.grid2D[tileY][tileX] == 1);
                     }
                 }
                 mask = walls;
